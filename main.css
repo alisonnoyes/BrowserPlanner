@@ -1,0 +1,41 @@
+/* CSS Reset */
+html, body {
+  margin:0;
+  padding:0;
+}
+
+.button {
+  position:relative;
+  background-color:#f2f2f2;
+  border:none;
+  color:#545454;
+  padding:24px 72px;
+  text-align:center;
+  text-decoration:none;
+  display:inline-block;
+  font-size:16px;
+}
+
+button.addnew {
+  font-size:16px;
+  padding:12px 36px;
+}
+
+.textbox {
+  position:relative;
+  text-align:center;
+  background-color:#545454;
+  width:1450px;
+  height:100px;
+}
+
+.centered {
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+}
+
+div.smallmargin {
+  margin-left:15px;
+}
