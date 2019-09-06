@@ -12,7 +12,7 @@
 
   <body style="background-color:#363535">
 
-    <div class="textbox">
+    <div class="textbox" onclick="window.location.href='/BrowserPlanner/planner.php'">
       <div class="centered">
         <h1><font color="white" face="helvetica">Alison's Planner</font></h1>
       </div>
