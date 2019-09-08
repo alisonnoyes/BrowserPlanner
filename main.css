@@ -1,41 +1,36 @@
-/* CSS Reset */
-html, body {
-  margin:0;
-  padding:0;
+* {
+box-sizing: border-box;
 }
 
-.button {
-  position:relative;
-  background-color:#f2f2f2;
-  border:none;
-  color:#545454;
-  padding:24px 72px;
-  text-align:center;
-  text-decoration:none;
-  display:inline-block;
-  font-size:16px;
+body {
+margin: 0;
 }
 
-button.addnew {
-  font-size:16px;
-  padding:12px 36px;
+/* Style the header */
+.header {
+background-color: #f1f1f1;
+padding: 20px;
+text-align: center;
 }
 
-.textbox {
-  position:relative;
-  text-align:center;
-  background-color:#545454;
-  width:1450px;
-  height:100px;
+/* Style the top navigation bar */
+.topnav {
+overflow: hidden;
+background-color: #333;
 }
 
-.centered {
-  position: absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
+/* Style the topnav links */
+.topnav a {
+float: left;
+display: block;
+color: #f2f2f2;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
 }
 
-div.smallmargin {
-  margin-left:15px;
+/* Change color on hover */
+.topnav a:hover {
+background-color: #ddd;
+color: black;
 }

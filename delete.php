@@ -1,22 +1,22 @@
 <?php
   include "sqlsetup.php";
 
-  $title = $_POST["title"];
+  $id = $_POST["id"];
 
-  if ($title != "") {
+  if ($id != 0) {
     // Check that the row exists
-    $check = mysqli_query($conn, "SELECT * FROM tasks_and_events WHERE title='" . $title . "'");
+    $check = mysqli_query($conn, "SELECT * FROM tasks_and_events WHERE id='" . $id . "'");
     $numrows = mysqli_num_rows($check);
     $numdel = 1;
 
     if ($numrows > 0) {
       // Delete the row
-      $querystring = "DELETE FROM tasks_and_events WHERE title='" . $title . "'";
+      $querystring = "DELETE FROM tasks_and_events WHERE id='" . $id . "'";
       mysqli_query($conn, $querystring);
 
-      $children = mysqli_query($conn, "SELECT * FROM tasks_and_events WHERE parent='" . $title . "'");
+      $children = mysqli_query($conn, "SELECT * FROM tasks_and_events WHERE parent='" . $id . "'");
       $numdel = 1 + mysqli_num_rows($children);
-      mysqli_query($conn, "DELETE FROM tasks_and_events WHERE parent='" . $title . "'");
+      mysqli_query($conn, "DELETE FROM tasks_and_events WHERE parent='" . $id . "'");
     }
 
     while ($row = mysqli_fetch_array($check)) {
@@ -33,6 +33,6 @@
     exit;
   }
 
-  echo $title;
+  echo $id;
   exit;
 ?>

@@ -37,13 +37,13 @@
           ?>
         </select> <br><br>
         <font color="white" face="helvetica">Parent task/event: </font> <select name="parent">
-          <option value="none">None</option>
+          <option value=0>None</option>
           <?php
             include "sqlsetup.php";
 
             $proj = mysqli_query($conn, "SELECT * FROM tasks_and_events");
             while ($row = mysqli_fetch_array($proj)) {
-              echo "<option value='" . $row["title"] . "'>" . $row["title"] . "</option>";
+              echo "<option value='" . $row["id"] . "'>" . $row["title"] . "</option>";
             }
           ?>
         </select> <br><br>
@@ -58,9 +58,11 @@
             $input_dodate = $_POST['dodate'];
             $dodate = date("Y-m-d", strtotime($input_dodate));
 
-            $querystring = 'INSERT INTO tasks_and_events (title, due_date, scheduled_date, priority, done, project, parent)' .
+            $idno = date('YmdHis');
+
+            $querystring = 'INSERT INTO tasks_and_events (title, due_date, scheduled_date, priority, done, project, parent, id)' .
             ' VALUES ("' . $_POST['name'] . '", STR_TO_DATE("' . $duedate . '", "%Y-%m-%d"), STR_TO_DATE("' .
-            $dodate . '", "%Y-%m-%d"), ' . $_POST['priority'] . ', 0, "' . $_POST['project'] . '", "' . $_POST['parent'] . '")';
+            $dodate . '", "%Y-%m-%d"), ' . $_POST['priority'] . ', 0, "' . $_POST['project'] . '", "' . $_POST['parent'] . '", ' . $idno . ')';
             mysqli_query($conn, $querystring);
 
             if ($_POST['project'] != "none") {

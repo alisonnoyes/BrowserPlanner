@@ -1,33 +1,70 @@
-<style>
-  @import url("main.css");
-</style>
-
-<html>
+<html lang="en">
 
   <head>
     <title>
       Alison's Planner
     </title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      .header {
+        background-color: #f1f1f1;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .navbar {
+        overflow: hidden;
+        background-color: #363535;
+        box-shadow: 2px 2px 5px #1f1e1e;
+      }
+
+      .navbar left {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 16px 30px;
+        text-decoration: none;
+      }
+
+      .navbar left:hover {
+        background-color: #ddd;
+        color: black;
+      }
+
+      .navbar right {
+        float: right;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 16px 30px;
+        text-decoration: none;
+      }
+
+      .navbar right:hover {
+        background-color: #ddd;
+        color: black;
+      }
+    </style>
   </head>
 
   <body style="background-color:#363535">
 
-    <div class="textbox" onclick="window.location.href='/BrowserPlanner/planner.php'">
-      <div class="centered">
-        <h1><font color="white" face="helvetica">Alison's Planner</font></h1>
-      </div>
-    </div>
-
-    <div align="left" class="smallmargin">
-    <p>
-      <button class="addnew" type="button" onclick="window.location.href='/BrowserPlanner/newtask.php'">
-        New Task
-      </button>
-
-      <button class="addnew" type="button" onclick="window.location.href='/BrowserPlanner/newevent.php'">
-        New Event
-      </button>
-    </p>
+    <div class="navbar">
+      <left onclick="window.location.href='/BrowserPlanner/planner.php'">ALISON'S PLANNER</left>
+      <right onclick="window.location.href='/BrowserPlanner/newtask.php'">New Task</right>
+      <right onclick="window.location.href='/BrowserPlanner/newevent.php'">New Event</right>
+    </div><br>
 
     <?php
       include "sqlsetup.php";
@@ -57,7 +94,7 @@
         echo "<td>" . $row["project"] . "</td>";
         echo "<td>" . $row["parent"] . "</td>";
         echo "<td>" . $row["done"] . "</td>";
-        echo "<td><span class='delete' id='del_" . $row["title"] . "'>Delete</span></td>";
+        echo "<td><span class='delete' id='del_" . $row["id"] . "'>Delete</span></td>";
         echo "</tr>";
       }
 
@@ -94,12 +131,12 @@
           var fullid = this.id;
           var splitid = fullid.split("_");
 
-          var id = splitid[1];
+          var myid = splitid[1];
 
           $.ajax({
             url: 'delete.php',
             type: 'POST',
-            data: { title: id },
+            data: { id: myid },
             success: function(response) {
               if (response == 1) {
                 // Reload the task and event table
