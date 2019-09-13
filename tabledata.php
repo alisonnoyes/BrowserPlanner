@@ -16,7 +16,15 @@
       $htmldata .= "<td>" . $row["project"] . "</td>";
       $htmldata .= "<td>" . $row["parent"] . "</td>";
       $htmldata .= "<td>" . $row["done"] . "</td>";
-      $htmldata .= "<td><span class='delete' id='del_" . $row["title"] . "'>Delete</span></td></tr>";
+      $htmldata .= "<td>";
+      $htmldata .= "<span class='delete' id='del_" . $row["id"] . "'>Delete</span><br>";
+      $htmldata .= "<div id='addtime' style='display: block'><a href='javascript:swapDiv(\"addtime\", \"timeform\")'>Add time</a></div>";
+      $htmldata .= "<div id='timeform' style='display: none'>";
+      $htmldata .= "<form action='planner.php' method='POST'>";
+      $htmldata .= "<font color='white' face='helvetica'>Time: </font> <input type='time' name='time'/>";
+      $htmldata .= "<input type='number' name='id' style='display: none' value=" . $row["id"] . "></input>";
+      $htmldata .= "<input type='submit' value='Submit' />";
+      $htmldata .= "</form></div></td>";
     }
   }
 

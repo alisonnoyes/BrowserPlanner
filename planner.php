@@ -53,7 +53,7 @@
 
       #taskeventtable {
         border-collapse: collapse;
-        width: 95%;
+        width: 100%;
         margin-left: auto;
         margin-right: auto;
       }
@@ -75,11 +75,6 @@
         text-align: left;
         background-color: #363535;
         color: #ddd;
-      }
-
-      .backgroundrect {
-        margin-left: auto;
-        margin-right: auto;
       }
 
       #container {
@@ -104,6 +99,8 @@
         float: left;
         height: 100%;
         background-color: #1f1e1e;
+        padding-left: 24px;
+        padding-right: 24px;
       }
     </style>
   </head>
@@ -207,7 +204,8 @@
 
                 mysqli_close($conn);
 
-                echo "<script>window.location.href='/BrowserPlanner/planner.php'</script>";
+                $url = basename($_SERVER["REQUEST_URI"]);
+                echo "<script>window.location.href=" . $url . "</script>";
               }
             ?>
           </form>
@@ -269,7 +267,8 @@
 
                 mysqli_close($conn);
 
-                echo "<script>window.location.href='/BrowserPlanner/planner.php'</script>";
+                $url = basename($_SERVER["REQUEST_URI"]);
+                echo "<script>window.location.href=" . $url . "</script>";
               }
             ?>
           </form>
@@ -295,32 +294,7 @@
         <?php
           include "sqlsetup.php";
 
-          echo "<div id='sql_data'>";
-
-          // Tasks and events table
-          $data = "";
-          $url = basename($_SERVER["REQUEST_URI"]);
-          $view = substr($url, strpos($url, "?") + 1);
-          if ($view == "lanner.php" || $view == "") {
-            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events ORDER BY DATE(scheduled_date) ASC, scheduled_time ASC');
-          }
-          else if ($view == "today") {
-            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() ORDER BY scheduled_time ASC');
-          }
-
-          echo "<table class='datatable' id='taskeventtable'> <tr>
-            <th>Task name</th>
-            <th>Due date</th>
-            <th>Scheduled date</th>
-            <th>Scheduled time</th>
-            <th>Priority</th>
-            <th>Project</th>
-            <th>Parent task/event</th>
-            <th>Done?</th>
-            <th></th>
-            </tr>";
-
-          while ($row = mysqli_fetch_array($data)) {
+          function generateRow($row) {
             echo "<tr>";
             echo "<td>" . $row["title"] . "</td>";
             echo "<td>" . $row["due_date"] . "</td>";
@@ -341,6 +315,58 @@
             echo "</form></div></td>";
             echo "</tr>";
           }
+
+          echo "<div id='sql_data'>";
+
+          // Tasks and events table
+          echo "<table class='datatable' id='taskeventtable'>";
+
+          $data = "";
+          $url = basename($_SERVER["REQUEST_URI"]);
+          $view = substr($url, strpos($url, "?") + 1);
+          if ($view == "lanner.php" || $view == "") {
+            echo "<h2>All Tasks and Events</h2>";
+            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events ORDER BY DATE(scheduled_date) ASC, scheduled_time ASC');
+            while ($rowdata = mysqli_fetch_array($data)) {
+              generateRow($rowdata);
+            }
+          }
+          else if ($view == "today") {
+            echo "<h2>Today</h2>";
+            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() ORDER BY scheduled_time ASC');
+            while ($rowdata = mysqli_fetch_array($data)) {
+              generateRow($rowdata);
+            }
+          }
+          else if ($view == "week") {
+            echo "<h2>This Week</h2>";
+
+            echo "<tr><td><b>Today</b></td></tr>";
+            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() ORDER BY scheduled_time ASC');
+            while ($rowdata = mysqli_fetch_array($data)) {
+              generateRow($rowdata);
+            }
+
+            echo "<tr><td><b>Tomorrow</b></td></tr>";
+            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() + INTERVAL 1 DAY ORDER BY scheduled_time ASC');
+            while ($rowdata = mysqli_fetch_array($data)) {
+              generateRow($rowdata);
+            }
+
+            $date = strtotime("tomorrow");
+            for ($x = 2; $x < 7; $x++) {
+              $date = strtotime("+1 day", $date);
+              $datestr = date("l", $date);
+              echo "<tr><td><b>" . $datestr . "</b></td></tr>";
+
+              $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() + INTERVAL ' . $x . ' DAY ORDER BY scheduled_time ASC');
+              while ($rowdata = mysqli_fetch_array($data)) {
+                generateRow($rowdata);
+              }
+            }
+          }
+
+
 
           echo "</table><br><br>";
 
@@ -381,8 +407,7 @@
                       type: 'POST',
                       data: { tablename: 'tasks_and_events' },
                       success: function(response) {
-                        var header = "<tr><th>Task name</th><th>Due date</th><th>Scheduled date</th><th>Scheduled time</th><th>Priority</th><th>Project</th><th>Parent task/event</th><th>Done?</th><th></th></tr>";
-                        $("#taskeventtable").html(header + response);
+                        $("#taskeventtable").html(response);
                       }
                     });
 
@@ -392,8 +417,7 @@
                       type: 'POST',
                       data: { tablename: 'projects' },
                       success: function(response) {
-                        var header = "<tr><th>Project name</th><th>Number of tasks and events</th></tr>";
-                        $("#projecttable").html(header + response);
+                        $("#projecttable").html(response);
                       }
                     });
                   }
