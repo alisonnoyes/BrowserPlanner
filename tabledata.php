@@ -11,6 +11,7 @@
       $htmldata .= "<tr><td>" . $row["title"] . "</td>";
       $htmldata .= "<td>" . $row["due_date"] . "</td>";
       $htmldata .= "<td>" . $row["scheduled_date"] . "</td>";
+      $htmldata .= "<td>" . $row["scheduled_time"] . "</td>";
       $htmldata .= "<td>" . $row["priority"] . "</td>";
       $htmldata .= "<td>" . $row["project"] . "</td>";
       $htmldata .= "<td>" . $row["parent"] . "</td>";

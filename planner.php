@@ -118,12 +118,13 @@
 
     <div id="container">
       <div id="pad"></div>
+
       <div id="leftitem">
         <br><br>
-        <font onclick="#">Today</font><br><br>
-        <font onclick="#">This week</font><br><br>
-        <font onclick="#">This month</font><br><br>
-        <font onclick="#">All tasks and events</font><br><br>
+        <a href="?today">Today</a><br><br>
+        <a href="?week">This week</a><br><br>
+        <a href="?month">This month</a><br><br>
+        <a href="?">All tasks and events</a><br><br>
         <?php
           include "sqlsetup.php";
 
@@ -152,7 +153,7 @@
         </div>
 
         <div id="newtaskform" style="display: none">
-          <form action="newtask.php" method="POST">
+          <form action="planner.php" method="POST">
             <font color="white" face="helvetica">Task name: </font> <input type="text" name="name" /> <br><br>
             <font color="white" face="helvetica">Due date: </font> <input type="date" name="duedate" /> <br><br>
             <font color="white" face="helvetica">Scheduled date: </font> <input type="date" name="dodate" /> <br><br>
@@ -217,7 +218,7 @@
         </div>
 
         <div id="neweventform" style="display:none">
-          <form action="newevent.php" method="POST">
+          <form action="planner.php" method="POST">
             <font color="white" face="helvetica">Event name: </font> <input type="text" name="name" /> <br><br>
             <font color="white" face="helvetica">Date: </font> <input type="date" name="date" /> <br><br>
             <font color="white" face="helvetica">Priority: </font> <input type="number" name="priority" /> <br><br>
@@ -297,12 +298,21 @@
           echo "<div id='sql_data'>";
 
           // Tasks and events table
-          $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events');
+          $data = "";
+          $url = basename($_SERVER["REQUEST_URI"]);
+          $view = substr($url, strpos($url, "?") + 1);
+          if ($view == "lanner.php" || $view == "") {
+            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events ORDER BY DATE(scheduled_date) ASC, scheduled_time ASC');
+          }
+          else if ($view == "today") {
+            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() ORDER BY scheduled_time ASC');
+          }
 
           echo "<table class='datatable' id='taskeventtable'> <tr>
             <th>Task name</th>
             <th>Due date</th>
             <th>Scheduled date</th>
+            <th>Scheduled time</th>
             <th>Priority</th>
             <th>Project</th>
             <th>Parent task/event</th>
@@ -315,17 +325,35 @@
             echo "<td>" . $row["title"] . "</td>";
             echo "<td>" . $row["due_date"] . "</td>";
             echo "<td>" . $row["scheduled_date"] . "</td>";
+            echo "<td>" . $row["scheduled_time"] . "</td>";
             echo "<td>" . $row["priority"] . "</td>";
             echo "<td>" . $row["project"] . "</td>";
             echo "<td>" . $row["parent"] . "</td>";
             echo "<td>" . $row["done"] . "</td>";
-            echo "<td><span class='delete' id='del_" . $row["id"] . "'>Delete</span></td>";
+            echo "<td>";
+            echo "<span class='delete' id='del_" . $row["id"] . "'>Delete</span><br>";
+            echo "<div id='addtime' style='display: block'><a href='javascript:swapDiv(\"addtime\", \"timeform\")'>Add time</a></div>";
+            echo "<div id='timeform' style='display: none'>";
+            echo "<form action='planner.php' method='POST'>";
+            echo "<font color='white' face='helvetica'>Time: </font> <input type='time' name='time'/>";
+            echo "<input type='number' name='id' style='display: none' value=" . $row["id"] . "></input>";
+            echo "<input type='submit' value='Submit' />";
+            echo "</form></div></td>";
             echo "</tr>";
           }
 
           echo "</table><br><br>";
 
           echo "</div>";
+
+          if ($_POST && isset($_POST["time"])) {
+            $input_time = $_POST["time"];
+            $sqltime = date("H:i:s", strtotime($input_time));
+
+            $querystring = 'UPDATE tasks_and_events SET scheduled_time=CAST("' . $sqltime . '" AS TIME) WHERE id=' . $_POST['id'];
+            mysqli_query($conn, $querystring);
+            echo "<script>window.location.href='/BrowserPlanner/planner.php'</script>";
+          }
 
           mysqli_close($conn);
         ?>
@@ -353,7 +381,7 @@
                       type: 'POST',
                       data: { tablename: 'tasks_and_events' },
                       success: function(response) {
-                        var header = "<tr><th>Task name</th><th>Due date</th><th>Scheduled date</th><th>Priority</th><th>Project</th><th>Parent task/event</th><th>Done?</th><th></th></tr>";
+                        var header = "<tr><th>Task name</th><th>Due date</th><th>Scheduled date</th><th>Scheduled time</th><th>Priority</th><th>Project</th><th>Parent task/event</th><th>Done?</th><th></th></tr>";
                         $("#taskeventtable").html(header + response);
                       }
                     });
@@ -379,6 +407,7 @@
         </script>
 
       </div>
+
       <div id="pad"></div>
     </div>
 
