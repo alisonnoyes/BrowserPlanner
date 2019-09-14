@@ -17,39 +17,39 @@
         margin: 0;
       }
 
+      ul {
+        list-style-type: none;
+      }
+
       .navbar {
         overflow: hidden;
         background-color: #363535;
         box-shadow: 2px 2px 5px #1f1e1e;
       }
-
-      .navbar left {
-        float: left;
-        display: block;
-        color: #f2f2f2;
-        text-align: center;
-        padding: 16px 30px;
-        text-decoration: none;
-      }
-
-      .navbar left:hover {
-        background-color: #ddd;
-        color: black;
-      }
-
-      .navbar right {
-        float: right;
-        display: block;
-        color: #f2f2f2;
-        text-align: center;
-        padding: 16px 30px;
-        text-decoration: none;
-      }
-
-      .navbar right:hover {
-        background-color: #ddd;
-        color: black;
-      }
+        .navbar left {
+          float: left;
+          display: block;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 16px 30px;
+          text-decoration: none;
+        }
+          .navbar left:hover {
+            background-color: #ddd;
+            color: black;
+          }
+        .navbar right {
+          float: right;
+          display: block;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 16px 30px;
+          text-decoration: none;
+        }
+          .navbar right:hover {
+            background-color: #ddd;
+            color: black;
+          }
 
       #taskeventtable {
         border-collapse: collapse;
@@ -57,43 +57,37 @@
         margin-left: auto;
         margin-right: auto;
       }
-
-      #taskeventtable td, #taskeventtable th {
-        border-bottom: 1px solid #363535;
-        border-top: 1px solid #363535;
-        border-collapse: collapse;
-        padding: 8px;
-      }
-
-      #taskeventtable tr:hover {
-        background-color: #363535;
-      }
-
-      #taskeventtable th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: left;
-        background-color: #363535;
-        color: #ddd;
-      }
+        #taskeventtable td, #taskeventtable th {
+          border-bottom: 1px solid #363535;
+          border-top: 1px solid #363535;
+          border-collapse: collapse;
+          padding: 8px;
+        }
+        #taskeventtable tr:hover {
+          background-color: #363535;
+        }
+        #taskeventtable th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #363535;
+          color: #ddd;
+        }
 
       #container {
         width: 100%;
         margin: auto;
       }
-
       #pad {
         width: 10%;
         float: left;
         height: 100%;
       }
-
       #leftitem {
         width: 15%;
         float: left;
         height: 100%;
       }
-
       #rightitem {
         width: 65%;
         float: left;
@@ -102,6 +96,65 @@
         padding-left: 24px;
         padding-right: 24px;
       }
+
+      .month {
+        padding: 70px 25px;
+        width: 100%;
+        background: #141414;
+        text-align: center;
+      }
+        .month ul {
+          margin: 0;
+          padding: 0;
+        }
+          .month ul li {
+            color: white;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+          }
+        .month .prev {
+          float: left;
+          padding-top: 10px;
+        }
+        .month .next {
+          float: right;
+          padding-top: 10px;
+        }
+      .weekdays {
+        margin: 0;
+        padding: 10px 0;
+        background-color: #9da0ab;
+      }
+        .weekdays li {
+          display: inline-block;
+          width: 13.6%;
+          color: #52545c;
+          text-align: center;
+        }
+      .days {
+        margin: 0;
+        padding: 20px 0;
+        background: #cccfdb;
+      }
+        .days li {
+          list-style-type: none;
+          display: inline-block;
+          width: 13.6%;
+          text-align: center;
+          margin-bottom: 20px;
+          font-size: 14px;
+          color: #52545c;
+        }
+          .days li .current {
+            padding: 5px;
+            background: #9da0ab;
+            color: white !important;
+          }
+          .days li .taskevent {
+            float: center;
+            padding-bottom: 5px;
+          }
     </style>
   </head>
 
@@ -364,6 +417,65 @@
                 generateRow($rowdata);
               }
             }
+          }
+          else if ($view == "month") {
+            echo "<h2>This Month</h2>";
+            echo "<div class='month'>";
+            $thismonth = date("F Y", strtotime("today"));
+            echo "<ul><li class='prev'>&#10094;</li><li class='next'>&#10095;</li><li>" . $thismonth . "</li></ul></div>";
+
+            echo "<ul class='weekdays'>";
+            echo "<li>MO</li><li>TU</li><li>WE</li><li>TH</li><li>FR</li><li>SA</li><li>SU</li>";
+            echo "</ul>";
+
+            echo "<ul class='days'>";
+
+            $date = strtotime(date("Y-m-1"));
+            $dayofweek = date("l", $date);
+            if ($dayofweek == "Tuesday") {
+              echo "<li></li>";
+            }
+            else if ($dayofweek == "Wednesday") {
+              echo "<li></li><li></li>";
+            }
+            else if ($dayofweek == "Thursday") {
+              echo "<li></li><li></li><li></li>";
+            }
+            else if ($dayofweek == "Friday") {
+              echo "<li></li><li></li><li></li><li></li>";
+            }
+            else if ($dayofweek == "Saturday") {
+              echo "<li></li><li></li><li></li><li></li><li></li>";
+            }
+            else if ($dayofweek == "Sunday") {
+              echo "<li></li><li></li><li></li><li></li><li></li><li></li>";
+            }
+
+            $today = strtotime("today");
+            $enddate = strtotime(date("Y-m-t"));
+            $counter = 0;
+            while ($date <= $enddate) {
+              $append = "";
+              $taskeventquery = "SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() + INTERVAL " . $counter . " DAY";
+              $counter++;
+              $taskevents = mysqli_query($conn, $taskeventquery);
+              $numtaskevents = mysqli_num_rows($taskevents);
+
+              for ($i = 0; $i < $numtaskevents; $i++) {
+                $append .= "<span class='taskevent'><br>!</span>";
+              }
+
+              $diff = $date - $today;
+              if (floor($diff / (60*60*24)) == 0) {
+                echo "<li><span class='current'>" . date("d", $date) . $append . "</span></li>";
+              }
+              else {
+                echo "<li>" . date("d", $date) . $append ."</li>";
+              }
+              $date = strtotime("+1 day", $date);
+            }
+
+            echo "</ul>";
           }
 
 
