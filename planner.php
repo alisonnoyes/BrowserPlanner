@@ -328,6 +328,9 @@
         </div>
         <br>
 
+        <div id="sql_data">
+        </div>
+
         <script type="text/javascript">
           function swapDiv(d1, d2) {
             div1 = document.getElementById(d1);
@@ -347,150 +350,14 @@
         <?php
           include "sqlsetup.php";
 
-          function generateRow($row) {
-            echo "<tr>";
-            echo "<td>" . $row["title"] . "</td>";
-            echo "<td>" . $row["due_date"] . "</td>";
-            echo "<td>" . $row["scheduled_date"] . "</td>";
-            echo "<td>" . $row["scheduled_time"] . "</td>";
-            echo "<td>" . $row["priority"] . "</td>";
-            echo "<td>" . $row["project"] . "</td>";
-            echo "<td>" . $row["parent"] . "</td>";
-            echo "<td>" . $row["done"] . "</td>";
-            echo "<td>";
-            echo "<span class='delete' id='del_" . $row["id"] . "'>Delete</span><br>";
-            echo "<div id='addtime' style='display: block'><a href='javascript:swapDiv(\"addtime\", \"timeform\")'>Add time</a></div>";
-            echo "<div id='timeform' style='display: none'>";
-            echo "<form action='planner.php' method='POST'>";
-            echo "<font color='white' face='helvetica'>Time: </font> <input type='time' name='time'/>";
-            echo "<input type='number' name='id' style='display: none' value=" . $row["id"] . "></input>";
-            echo "<input type='submit' value='Submit' />";
-            echo "</form></div></td>";
-            echo "</tr>";
-          }
-
-          echo "<div id='sql_data'>";
-
-          // Tasks and events table
-          echo "<table class='datatable' id='taskeventtable'>";
-
-          $data = "";
-          $url = basename($_SERVER["REQUEST_URI"]);
-          $view = substr($url, strpos($url, "?") + 1);
-          if ($view == "lanner.php" || $view == "") {
-            echo "<h2>All Tasks and Events</h2>";
-            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events ORDER BY DATE(scheduled_date) ASC, scheduled_time ASC');
-            while ($rowdata = mysqli_fetch_array($data)) {
-              generateRow($rowdata);
-            }
-          }
-          else if ($view == "today") {
-            echo "<h2>Today</h2>";
-            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() ORDER BY scheduled_time ASC');
-            while ($rowdata = mysqli_fetch_array($data)) {
-              generateRow($rowdata);
-            }
-          }
-          else if ($view == "week") {
-            echo "<h2>This Week</h2>";
-
-            echo "<tr><td><b>Today</b></td></tr>";
-            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() ORDER BY scheduled_time ASC');
-            while ($rowdata = mysqli_fetch_array($data)) {
-              generateRow($rowdata);
-            }
-
-            echo "<tr><td><b>Tomorrow</b></td></tr>";
-            $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() + INTERVAL 1 DAY ORDER BY scheduled_time ASC');
-            while ($rowdata = mysqli_fetch_array($data)) {
-              generateRow($rowdata);
-            }
-
-            $date = strtotime("tomorrow");
-            for ($x = 2; $x < 7; $x++) {
-              $date = strtotime("+1 day", $date);
-              $datestr = date("l", $date);
-              echo "<tr><td><b>" . $datestr . "</b></td></tr>";
-
-              $data = mysqli_query($conn, 'SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() + INTERVAL ' . $x . ' DAY ORDER BY scheduled_time ASC');
-              while ($rowdata = mysqli_fetch_array($data)) {
-                generateRow($rowdata);
-              }
-            }
-          }
-          else if ($view == "month") {
-            echo "<h2>This Month</h2>";
-            echo "<div class='month'>";
-            $thismonth = date("F Y", strtotime("today"));
-            echo "<ul><li class='prev'>&#10094;</li><li class='next'>&#10095;</li><li>" . $thismonth . "</li></ul></div>";
-
-            echo "<ul class='weekdays'>";
-            echo "<li>MO</li><li>TU</li><li>WE</li><li>TH</li><li>FR</li><li>SA</li><li>SU</li>";
-            echo "</ul>";
-
-            echo "<ul class='days'>";
-
-            $date = strtotime(date("Y-m-1"));
-            $dayofweek = date("l", $date);
-            if ($dayofweek == "Tuesday") {
-              echo "<li></li>";
-            }
-            else if ($dayofweek == "Wednesday") {
-              echo "<li></li><li></li>";
-            }
-            else if ($dayofweek == "Thursday") {
-              echo "<li></li><li></li><li></li>";
-            }
-            else if ($dayofweek == "Friday") {
-              echo "<li></li><li></li><li></li><li></li>";
-            }
-            else if ($dayofweek == "Saturday") {
-              echo "<li></li><li></li><li></li><li></li><li></li>";
-            }
-            else if ($dayofweek == "Sunday") {
-              echo "<li></li><li></li><li></li><li></li><li></li><li></li>";
-            }
-
-            $today = strtotime("today");
-            $enddate = strtotime(date("Y-m-t"));
-            $counter = 0;
-            while ($date <= $enddate) {
-              $append = "";
-              $taskeventquery = "SELECT * FROM tasks_and_events WHERE scheduled_date = CURDATE() + INTERVAL " . $counter . " DAY";
-              $counter++;
-              $taskevents = mysqli_query($conn, $taskeventquery);
-              $numtaskevents = mysqli_num_rows($taskevents);
-
-              for ($i = 0; $i < $numtaskevents; $i++) {
-                $append .= "<span class='taskevent'><br>!</span>";
-              }
-
-              $diff = $date - $today;
-              if (floor($diff / (60*60*24)) == 0) {
-                echo "<li><span class='current'>" . date("d", $date) . $append . "</span></li>";
-              }
-              else {
-                echo "<li>" . date("d", $date) . $append ."</li>";
-              }
-              $date = strtotime("+1 day", $date);
-            }
-
-            echo "</ul>";
-          }
-
-
-
-          echo "</table><br><br>";
-
-          echo "</div>";
-
           if ($_POST && isset($_POST["time"])) {
             $input_time = $_POST["time"];
             $sqltime = date("H:i:s", strtotime($input_time));
 
             $querystring = 'UPDATE tasks_and_events SET scheduled_time=CAST("' . $sqltime . '" AS TIME) WHERE id=' . $_POST['id'];
             mysqli_query($conn, $querystring);
-            echo "<script>window.location.href='/BrowserPlanner/planner.php'</script>";
+            $url = basename($_SERVER["REQUEST_URI"]);
+            echo "<script>window.location.href=" . $url . "</script>";
           }
 
           mysqli_close($conn);
@@ -500,6 +367,54 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
         <script>
           $(document).ready(function() {
+            $.ajax({
+              url: 'loadview.php',
+              type: 'POST',
+              data: { url: window.location.href },
+              success: function(response) {
+                $("#sql_data").html(response);
+              }
+            })
+
+            $('.done').click(function() {
+              var element = this;
+              var fullid = this.id;
+              var splitid = fullid.split("_");
+
+              var myid = splitid[1];
+
+              $.ajax({
+                url: 'done.php',
+                type: 'POST',
+                data: { id: myid },
+                success: function(response) {
+                  if (response == 1) {
+                    // Reload the task and event table
+                    $.ajax({
+                      url: 'tabledata.php',
+                      type: 'POST',
+                      data: { tablename: 'tasks_and_events' },
+                      success: function(response) {
+                        $("#taskeventtable").html(response);
+                      }
+                    });
+
+                    // Reload the project table
+                    $.ajax({
+                      url: 'tabledata.php',
+                      type: 'POST',
+                      data: { tablename: 'projects' },
+                      success: function(response) {
+                        $("#projecttable").html(response);
+                      }
+                    });
+                  }
+                  else {
+                    alert(response);
+                  }
+                }
+              });
+            })
             $('.delete').click(function() {
               var element = this;
               var fullid = this.id;

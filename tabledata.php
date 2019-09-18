@@ -2,7 +2,15 @@
   include "sqlsetup.php";
 
   $htmldata = "";
-  $projectdata = mysqli_query($conn, 'SELECT * FROM ' . $_POST["tablename"]);
+  $projectdata = "";
+
+  if ($_POST["tablename"] == "tasks_and_events") {
+    $projectdata = mysqli_query($conn, "SELECT * FROM tasks_and_events WHERE (done = 0 OR done = 99)");
+  }
+  else {
+    $projectdata = mysqli_query($conn, 'SELECT * FROM ' . $_POST["tablename"]);
+  }
+  
   while ($row = mysqli_fetch_array($projectdata)) {
     if ($_POST["tablename"] == "projects") {
       $htmldata .= "<tr><td>" . $row["title"] . "</td><td>" . $row["count"] . "</td></tr>";
@@ -18,6 +26,7 @@
       $htmldata .= "<td>" . $row["done"] . "</td>";
       $htmldata .= "<td>";
       $htmldata .= "<span class='delete' id='del_" . $row["id"] . "'>Delete</span><br>";
+      $htmldata .= "<span class='done' id='done_" . $row["id"] . "'>Done</span><br>";
       $htmldata .= "<div id='addtime' style='display: block'><a href='javascript:swapDiv(\"addtime\", \"timeform\")'>Add time</a></div>";
       $htmldata .= "<div id='timeform' style='display: none'>";
       $htmldata .= "<form action='planner.php' method='POST'>";
