@@ -374,9 +374,9 @@
               success: function(response) {
                 $("#sql_data").html(response);
               }
-            })
+            });
 
-            $('.done').click(function() {
+            $('#sql_data').on("click", ".done", function() {
               var element = this;
               var fullid = this.id;
               var splitid = fullid.split("_");
@@ -415,7 +415,7 @@
                 }
               });
             })
-            $('.delete').click(function() {
+            $('#sql_data').on("click", ".delete", function() {
               var element = this;
               var fullid = this.id;
               var splitid = fullid.split("_");
