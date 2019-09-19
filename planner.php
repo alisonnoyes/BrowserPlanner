@@ -15,6 +15,7 @@
 
       body {
         margin: 0;
+        color: white;
       }
 
       ul {
@@ -155,6 +156,30 @@
             float: center;
             padding-bottom: 5px;
           }
+
+      .circle {
+        height: 10px;
+        width: 10px;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .tablerow {
+        overflow: hidden;
+      }
+        .tablerow left {
+          float: left;
+          display: block;
+          text-align: left;
+          padding: 16px 10px;
+        }
+        .tablerow right {
+          float: right;
+          display: block;
+          text-align: left;
+          padding: 16px 10px;
+        }
     </style>
   </head>
 
@@ -186,7 +211,8 @@
 
           while ($row = mysqli_fetch_array($projectdata)) {
             echo "<tr>";
-            echo "<td>" . $row["title"] . "</td>";
+            echo "<td><span class='circle' style='background-color:" . $row["color"] . "'></span></td>";
+            echo "<td><a href=?" . str_replace(" ", "-", $row["title"]) . ">" . $row["title"] . "</td>";
             echo "<td>" . $row["count"] . "</td>";
             echo "</tr>";
           }
@@ -391,11 +417,11 @@
                   if (response == 1) {
                     // Reload the task and event table
                     $.ajax({
-                      url: 'tabledata.php',
+                      url: 'loadview.php',
                       type: 'POST',
-                      data: { tablename: 'tasks_and_events' },
+                      data: { url: window.location.href },
                       success: function(response) {
-                        $("#taskeventtable").html(response);
+                        $("#sql_data").html(response);
                       }
                     });
 
@@ -430,11 +456,11 @@
                   if (response == 1) {
                     // Reload the task and event table
                     $.ajax({
-                      url: 'tabledata.php',
+                      url: 'loadview.php',
                       type: 'POST',
-                      data: { tablename: 'tasks_and_events' },
+                      data: { url: window.location.href },
                       success: function(response) {
-                        $("#taskeventtable").html(response);
+                        $("#sql_data").html(response);
                       }
                     });
 
