@@ -2,7 +2,7 @@
 
   <head>
     <title>
-      Alison's Planner
+      alison's planner
     </title>
 
     <meta charset="utf-8">
@@ -22,10 +22,20 @@
         list-style-type: none;
       }
 
+      a:link {
+        text-decoration: none;
+        color: white;
+      }
+      a:visited {
+        text-decoration: none;
+        color: white;
+      }
+
       .navbar {
         overflow: hidden;
-        background-color: #363535;
+        background-color: rgba(0, 0, 0, 0.25);
         box-shadow: 2px 2px 5px #1f1e1e;
+        height: 64px;
       }
         .navbar left {
           float: left;
@@ -34,6 +44,7 @@
           text-align: center;
           padding: 16px 30px;
           text-decoration: none;
+          height: 100%;
         }
           .navbar left:hover {
             background-color: #ddd;
@@ -44,7 +55,8 @@
           display: block;
           color: #f2f2f2;
           text-align: center;
-          padding: 16px 30px;
+          padding: 22px 30px;
+          height: 100%;
           text-decoration: none;
         }
           .navbar right:hover {
@@ -186,46 +198,10 @@
   <body style="background-color:#363535">
 
     <div class="navbar">
-      <left onclick="window.location.href='/BrowserPlanner/planner.php'"><b>ALISON'S PLANNER</b></left>
-      <right onclick="window.location.href='/BrowserPlanner/newtask.php'">New Task</right>
-      <right onclick="window.location.href='/BrowserPlanner/newevent.php'">New Event</right>
-    </div>
-
-    <div id="container">
-      <div id="pad"></div>
-
-      <div id="leftitem">
-        <br><br>
-        <a href="?today">Today</a><br><br>
-        <a href="?week">This week</a><br><br>
-        <a href="?month">This month</a><br><br>
-        <a href="?">All tasks and events</a><br><br>
-        <?php
-          include "sqlsetup.php";
-
-          // Projects table
-          $projectdata = mysqli_query($conn, 'SELECT * FROM projects');
-
-          echo "<b>Projects</b>";
-          echo "<table class='datatable' id='projecttable'>";
-
-          while ($row = mysqli_fetch_array($projectdata)) {
-            echo "<tr>";
-            echo "<td><span class='circle' style='background-color:" . $row["color"] . "'></span></td>";
-            echo "<td><a href=?" . str_replace(" ", "-", $row["title"]) . ">" . $row["title"] . "</td>";
-            echo "<td>" . $row["count"] . "</td>";
-            echo "</tr>";
-          }
-
-          echo "</table>";
-        ?>
-      </div>
-
-      <div id="rightitem">
-        <br>
-
+      <left onclick="window.location.href='/BrowserPlanner/planner.php?'"><b><font size="5">alison's planner</font></b></left>
+      <right>
         <div id="addnewtask" style="display: block">
-          <a href="javascript:swapDiv('addnewtask', 'newtaskform')">New task</a>
+          <a href="javascript:swapDiv('addnewtask', 'newtaskform')">NEW TASK</a>
         </div>
 
         <div id="newtaskform" style="display: none">
@@ -289,9 +265,11 @@
             ?>
           </form>
         </div>
+      </right>
 
+      <right>
         <div id="addnewevent" style="display:block">
-          <a href="javascript:swapDiv('addnewevent', 'neweventform')">New event</a>
+          <a href="javascript:swapDiv('addnewevent', 'neweventform')">NEW EVENT</a>
         </div>
 
         <div id="neweventform" style="display:none">
@@ -352,8 +330,41 @@
             ?>
           </form>
         </div>
-        <br>
+      </right>
+    </div>
 
+    <div id="container">
+      <div id="pad"></div>
+
+      <div id="leftitem">
+        <br><br>
+        <a href="?today">Today</a><br><br>
+        <a href="?week">This week</a><br><br>
+        <a href="?month">This month</a><br><br>
+        <a href="?">All tasks and events</a><br><br>
+        <?php
+          include "sqlsetup.php";
+
+          // Projects table
+          $projectdata = mysqli_query($conn, 'SELECT * FROM projects');
+
+          echo "<b>Projects</b>";
+          echo "<table class='datatable' id='projecttable'>";
+
+          while ($row = mysqli_fetch_array($projectdata)) {
+            echo "<tr>";
+            echo "<td><span class='circle' style='background-color:" . $row["color"] . "'></span></td>";
+            echo "<td><a href=?" . str_replace(" ", "-", $row["title"]) . ">" . $row["title"] . "</td>";
+            echo "<td>" . $row["count"] . "</td>";
+            echo "</tr>";
+          }
+
+          echo "</table>";
+        ?>
+      </div>
+
+      <div id="rightitem">
+        <br>
         <div id="sql_data">
         </div>
 
