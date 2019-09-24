@@ -30,6 +30,9 @@
         text-decoration: none;
         color: white;
       }
+      a:hover {
+        background-color: #4f4d4d;
+      }
 
       .navbar {
         overflow: hidden;
@@ -192,6 +195,27 @@
           text-align: left;
           padding: 16px 10px;
         }
+
+      .collapse {
+        background-color: #363535;
+        color: white;
+        cursor: pointer;
+        padding: 10px 0;
+        width: 100%;
+        border-bottom: 2px solid white;
+        text-align: left;
+        outline: none;
+        font-size: 16px;
+      }
+      .collapse:hover {
+        background-color: #4f4d4d;
+      }
+      .content {
+        padding: 0 16px;
+        display: none;
+        overflow: hidden;
+        background-color: #363535;
+      }
     </style>
   </head>
 
@@ -199,11 +223,8 @@
 
     <div class="navbar">
       <left onclick="window.location.href='/BrowserPlanner/planner.php?'"><b><font size="5">alison's planner</font></b></left>
-      <right>
-        <div id="addnewtask" style="display: block">
-          <a href="javascript:swapDiv('addnewtask', 'newtaskform')">NEW TASK</a>
-        </div>
-
+      <right onclick="javascript:swapDiv('addnewtask', 'newtaskform')">
+        <div id="addnewtask" style="display: block">NEW TASK</div>
         <div id="newtaskform" style="display: none">
           <form action="planner.php" method="POST">
             <font color="white" face="helvetica">Task name: </font> <input type="text" name="name" /> <br><br>
@@ -267,11 +288,8 @@
         </div>
       </right>
 
-      <right>
-        <div id="addnewevent" style="display:block">
-          <a href="javascript:swapDiv('addnewevent', 'neweventform')">NEW EVENT</a>
-        </div>
-
+      <right onclick="javascript:swapDiv('addnewevent', 'neweventform')">
+        <div id="addnewevent" style="display:block">NEW EVENT</div>
         <div id="neweventform" style="display:none">
           <form action="planner.php" method="POST">
             <font color="white" face="helvetica">Event name: </font> <input type="text" name="name" /> <br><br>
@@ -331,6 +349,22 @@
           </form>
         </div>
       </right>
+
+      <script type="text/javascript">
+        function swapDiv(d1, d2) {
+          div1 = document.getElementById(d1);
+          div2 = document.getElementById(d2);
+
+          if (div2.style.display == "none") {
+            div1.style.display = "none";
+            div2.style.display = "block";
+          }
+          else {
+            div1.style.display = "block";
+            div2.style.display = "none";
+          }
+        }
+      </script>
     </div>
 
     <div id="container">
@@ -342,14 +376,16 @@
         <a href="?week">This week</a><br><br>
         <a href="?month">This month</a><br><br>
         <a href="?">All tasks and events</a><br><br>
+
+        <div class="collapse" onclick="javascript:collapseable('projectlist')">Projects +</div>
+
         <?php
           include "sqlsetup.php";
 
           // Projects table
           $projectdata = mysqli_query($conn, 'SELECT * FROM projects');
 
-          echo "<b>Projects</b>";
-          echo "<table class='datatable' id='projecttable'>";
+          echo "<div class='content' id='projectlist'><br><table class='datatable' id='projecttable'>";
 
           while ($row = mysqli_fetch_array($projectdata)) {
             echo "<tr>";
@@ -359,30 +395,27 @@
             echo "</tr>";
           }
 
-          echo "</table>";
+          echo "</table></div>";
         ?>
+
+        <script type="text/javascript">
+          function collapseable(div) {
+            d = document.getElementById(div);
+
+            if (d.style.display == "none") {
+              d.style.display = "block";
+            }
+            else {
+              d.style.display = "none";
+            }
+          }
+        </script>
       </div>
 
       <div id="rightitem">
         <br>
         <div id="sql_data">
         </div>
-
-        <script type="text/javascript">
-          function swapDiv(d1, d2) {
-            div1 = document.getElementById(d1);
-            div2 = document.getElementById(d2);
-
-            if (div2.style.display == "none") {
-              div1.style.display = "none";
-              div2.style.display = "block";
-            }
-            else {
-              div1.style.display = "block";
-              div2.style.display = "none";
-            }
-          }
-        </script>
 
         <?php
           include "sqlsetup.php";
