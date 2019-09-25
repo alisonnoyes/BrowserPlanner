@@ -207,7 +207,7 @@
         outline: none;
         font-size: 16px;
       }
-      .collapse:hover {
+        .collapse:hover {
         background-color: #4f4d4d;
       }
       .content {
@@ -216,6 +216,37 @@
         overflow: hidden;
         background-color: #363535;
       }
+
+      .popup {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .popupcontent {
+        background-color: white;
+        margin: auto;
+        padding: 14px;
+        border: 1px solid white;
+        width: 60%;
+      }
+      .popupclose {
+        color: black;
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+      }
+        .popupclose:hover, .popupclose:focus {
+          color: #aaaaaa;
+          text-decoration: none;
+          cursor: pointer;
+        }
     </style>
   </head>
 
@@ -223,30 +254,31 @@
 
     <div class="navbar">
       <left onclick="window.location.href='/BrowserPlanner/planner.php?'"><b><font size="5">alison's planner</font></b></left>
-      <right onclick="javascript:swapDiv('addnewtask', 'newtaskform')">
-        <div id="addnewtask" style="display: block">NEW TASK</div>
-        <div id="newtaskform" style="display: none">
+
+      <right id="addnewtask">NEW TASK</right>
+      <div id="newtaskpopup" class="popup">
+        <div id="newtaskform" class="popupcontent">
+          <!--<span class="popupclose">&times;</span>-->
+          <h2><font color="black">New Task</font></h2>
           <form action="planner.php" method="POST">
-            <font color="white" face="helvetica">Task name: </font> <input type="text" name="name" /> <br><br>
-            <font color="white" face="helvetica">Due date: </font> <input type="date" name="duedate" /> <br><br>
-            <font color="white" face="helvetica">Scheduled date: </font> <input type="date" name="dodate" /> <br><br>
-            <font color="white" face="helvetica">Priority: </font> <input type="number" name="priority" /> <br><br>
-            <font color="white" face="helvetica">Project: </font> <select name="project">
+            <font color="black" face="helvetica">Task name: </font> <input type="text" name="name" /> <br><br>
+            <font color="black" face="helvetica">Due date: </font> <input type="date" name="duedate" /> <br><br>
+            <font color="black" face="helvetica">Scheduled date: </font> <input type="date" name="dodate" /> <br><br>
+            <font color="black" face="helvetica">Priority: </font> <input type="number" name="priority" /> <br><br>
+            <font color="black" face="helvetica">Project: </font> <select name="project">
               <option value="none">None</option>
               <?php
                 include "sqlsetup.php";
-
                 $proj = mysqli_query($conn, "SELECT * FROM projects");
                 while ($row = mysqli_fetch_array($proj)) {
                   echo "<option value='" . $row["title"] . "'>" . $row["title"] . "</option>";
                 }
               ?>
             </select> <br><br>
-            <font color="white" face="helvetica">Parent task/event: </font> <select name="parent">
+            <font color="black" face="helvetica">Parent task/event: </font> <select name="parent">
               <option value=0>None</option>
               <?php
                 include "sqlsetup.php";
-
                 $proj = mysqli_query($conn, "SELECT * FROM tasks_and_events");
                 while ($row = mysqli_fetch_array($proj)) {
                   echo "<option value='" . $row["id"] . "'>" . $row["title"] . "</option>";
@@ -258,59 +290,53 @@
             <?php
               if ($_POST && isset($_POST['name']) && isset($_POST['duedate'])) {
                 include "sqlsetup.php";
-
                 $input_duedate = $_POST['duedate'];
                 $duedate = date("Y-m-d",strtotime($input_duedate));
                 $input_dodate = $_POST['dodate'];
                 $dodate = date("Y-m-d", strtotime($input_dodate));
-
                 $idno = date('YmdHis');
-
                 $querystring = 'INSERT INTO tasks_and_events (title, due_date, scheduled_date, priority, done, project, parent, id)' .
                 ' VALUES ("' . $_POST['name'] . '", STR_TO_DATE("' . $duedate . '", "%Y-%m-%d"), STR_TO_DATE("' .
                 $dodate . '", "%Y-%m-%d"), ' . $_POST['priority'] . ', 0, "' . $_POST['project'] . '", "' . $_POST['parent'] . '", ' . $idno . ')';
                 mysqli_query($conn, $querystring);
-
                 if ($_POST['project'] != "none") {
                   $prevcount = mysqli_query($conn, "SELECT count FROM projects WHERE title='" . $_POST['project'] . "'");
                   $count = array_values(mysqli_fetch_assoc($prevcount))[0];
                   $projcountquery = "UPDATE projects SET count=" . ($count + 1) . " WHERE title='" . $_POST['project'] . "'";
                   mysqli_query($conn, $projcountquery);
                 }
-
                 mysqli_close($conn);
-
                 $url = basename($_SERVER["REQUEST_URI"]);
                 echo "<script>window.location.href=" . $url . "</script>";
               }
             ?>
           </form>
         </div>
-      </right>
+      </div>
 
-      <right onclick="javascript:swapDiv('addnewevent', 'neweventform')">
-        <div id="addnewevent" style="display:block">NEW EVENT</div>
-        <div id="neweventform" style="display:none">
+      <right id="addnewevent">NEW EVENT</right>
+      <div id="neweventpopup" class="popup">
+        <div id="neweventform" class="popupcontent">
+          <!--<span class="popupclose">&times;</span>-->
+          <h2><font color="black">New Event</font></h2>
           <form action="planner.php" method="POST">
-            <font color="white" face="helvetica">Event name: </font> <input type="text" name="name" /> <br><br>
-            <font color="white" face="helvetica">Date: </font> <input type="date" name="date" /> <br><br>
-            <font color="white" face="helvetica">Priority: </font> <input type="number" name="priority" /> <br><br>
-            <font color="white" face="helvetica">Project: </font> <select name="project">
+            <font color="black" face="helvetica">Event name: </font> <input type="text" name="name" /> <br><br>
+            <font color="black" face="helvetica">Date: </font> <input type="date" name="date" /> <br><br>
+            <font color="black" face="helvetica">Priority: </font> <input type="number" name="priority" /> <br><br>
+            <font color="black" face="helvetica">Project: </font> <select name="project">
               <option value="none">None</option>
               <?php
                 include "sqlsetup.php";
-
                 $proj = mysqli_query($conn, "SELECT * FROM projects");
                 while ($row = mysqli_fetch_array($proj)) {
                   echo "<option value='" . $row["title"] . "'>" . $row["title"] . "</option>";
                 }
               ?>
             </select> <br><br>
-            <font color="white" face="helvetica">Parent task/event: </font> <select name="parent">
+            <font color="black" face="helvetica">Parent task/event: </font> <select name="parent">
               <option value=0>None</option>
               <?php
                 include "sqlsetup.php";
-
                 $proj = mysqli_query($conn, "SELECT * FROM tasks_and_events");
                 while ($row = mysqli_fetch_array($proj)) {
                   echo "<option value='" . $row["id"] . "'>" . $row["title"] . "</option>";
@@ -322,33 +348,53 @@
             <?php
               if ($_POST && isset($_POST['name']) && isset($_POST['date'])) {
                 include "sqlsetup.php";
-
                 $input_date = $_POST['date'];
                 $date = date("Y-m-d",strtotime($input_date));
-
                 $idno = date('YmdHis');
-
                 $querystring = 'INSERT INTO tasks_and_events (title, due_date, scheduled_date, priority, done, project, parent, id)' .
                 ' VALUES ("' . $_POST['name'] . '", NOW(), STR_TO_DATE("' .
                 $date . '", "%Y-%m-%d"), ' . $_POST['priority'] . ', 99, "' . $_POST['project'] . '", "' . $_POST['parent'] . '", ' . $idno . ')';
                 mysqli_query($conn, $querystring);
-
                 if ($_POST['project'] != "none") {
                   $prevcount = mysqli_query($conn, "SELECT count FROM projects WHERE title='" . $_POST['project'] . "'");
                   $count = array_values(mysqli_fetch_assoc($prevcount))[0];
                   $projcountquery = "UPDATE projects SET count=" . ($count + 1) . " WHERE title='" . $_POST['project'] . "'";
                   mysqli_query($conn, $projcountquery);
                 }
-
                 mysqli_close($conn);
-
                 $url = basename($_SERVER["REQUEST_URI"]);
                 echo "<script>window.location.href=" . $url . "</script>";
               }
             ?>
           </form>
         </div>
-      </right>
+      </div>
+
+      <script>
+        var newtaskpopup = document.getElementById("newtaskpopup");
+        var addnewtask = document.getElementById("addnewtask");
+
+        addnewtask.onclick = function() {
+          newtaskpopup.style.display = "block";
+        }
+        window.onclick = function(event) {
+          if (event.target == newtaskpopup) {
+            newtaskpopup.style.display = "none";
+          }
+        }
+
+        var neweventpopup = document.getElementById("neweventpopup");
+        var addnewevent = document.getElementById("addnewevent");
+
+        addnewevent.onclick = function() {
+          neweventpopup.style.display = "block";
+        }
+        window.onclick = function(event) {
+          if (event.target == neweventpopup) {
+            neweventpopup.style.display = "none";
+          }
+        }
+      </script>
 
       <script type="text/javascript">
         function swapDiv(d1, d2) {
